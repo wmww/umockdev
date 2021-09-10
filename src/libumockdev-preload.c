@@ -71,6 +71,8 @@
 
 #define UNHANDLED -100
 
+static int forked = 0;
+
 static void *
 get_libc_func(const char *f)
 {
@@ -538,6 +540,9 @@ remote_emulate(int fd, int cmd, long arg1, long arg2)
     sigset_t sig_set, sig_restore;
     int res;
 
+    if (forked)
+        return UNHANDLED;
+
     /* Block all signals while we are talking with the remote process. */
     sigfillset(&sig_set);
     pthread_sigmask(SIG_SETMASK, &sig_set, &sig_restore);
@@ -873,6 +878,9 @@ script_record_open(int fd)
     const void* data = NULL;
     enum script_record_format fmt;
     int r;
+
+    if (forked)
+        return;
 
     if (!script_dev_logfile_map_inited)
 	init_script_dev_logfile_map();
@@ -1713,6 +1721,19 @@ isatty(int fd)
 out:
     errno = orig_errno;
     return result;
+}
+
+static void
+umockdev_fork_child (void)
+{
+    forked = 1;
+}
+
+static void umockdev_preload_init (void) __attribute__((constructor));
+void
+umockdev_preload_init (void)
+{
+    pthread_atfork(NULL, NULL, umockdev_fork_child);
 }
 
 /* vim: set sw=4 noet: */
