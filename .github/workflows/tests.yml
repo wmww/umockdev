@@ -12,16 +12,16 @@ jobs:
       matrix:
         scenario:
           - apt-docker.io/amd64/ubuntu:devel
-          - apt-docker.io/amd64/ubuntu:latest
-          - apt-docker.io/amd64/ubuntu:rolling
-          - apt-docker.io/i386/debian:testing
-          - apt-docker.io/amd64/debian:testing
-          - dnf-registry.fedoraproject.org/fedora:latest
-          - dnf-registry.fedoraproject.org/fedora:rawhide
-          - alpine-docker.io/alpine
-          - alpine-docker.io/i386/alpine
-          - alpine@gudev-docker.io/alpine
-          - nix-docker.io/nixos/nix
+          #- apt-docker.io/amd64/ubuntu:latest
+          #- apt-docker.io/amd64/ubuntu:rolling
+          #- apt-docker.io/i386/debian:testing
+          #- apt-docker.io/amd64/debian:testing
+          #- dnf-registry.fedoraproject.org/fedora:latest
+          #- dnf-registry.fedoraproject.org/fedora:rawhide
+          #- alpine-docker.io/alpine
+          #- alpine-docker.io/i386/alpine
+          #- alpine@gudev-docker.io/alpine
+          #- nix-docker.io/nixos/nix
         include:
           - scenario: alpine@gudev-alpine
             env: EXTRA_PACKAGES=libgudev-dev
@@ -30,6 +30,10 @@ jobs:
     steps:
       - name: Clone repository
         uses: actions/checkout@v2
+
+      - uses: actions/checkout@v2
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
 
       - name: Run unit tests
         run: |
